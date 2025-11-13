@@ -1,10 +1,16 @@
 import { useState } from "react";
+import "../App.css";
 
+
+export interface ToolboxItem {
+    title: string;
+    link: string;
+}
 
 interface Props {
-    items: string[];
+    items: ToolboxItem[];
     name: string;
-    onSelectItem: (item: string) => void;
+    onSelectItem: (item: ToolboxItem) => void;
 }
 
 function ListGroup({ items, name, onSelectItem }: Props) {
@@ -25,15 +31,15 @@ function ListGroup({ items, name, onSelectItem }: Props) {
 
                 {items.map((item, index) => (
                     <li
-                        className={selectedIndex == index ? "list-group-item active" : "list-group-item"}
-                        key={item}
+                        className={"list-group-item-action " + (selectedIndex == index ? "list-group-item active" : "list-group-item")}
+                        key={item.title}
                         onClick={
                             () => {
                                 setSelectedIndex(index);
                                 onSelectItem(item);
                             }
                         }>
-                        {item}
+                        {item.title}
                     </li>
                 ))}
 
@@ -43,4 +49,3 @@ function ListGroup({ items, name, onSelectItem }: Props) {
 }
 
 export default ListGroup;
-

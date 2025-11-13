@@ -2,3 +2,7 @@
     align-content: center;
     margin: auto;
 }
+
+.list-group-item {
+    cursor: pointer;
+}
