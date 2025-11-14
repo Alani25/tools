@@ -1,7 +1,7 @@
 
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Arrow from "./threeJSComp/Arrow";
 import Cube from "./threeJSComp/Cube";
@@ -27,6 +27,17 @@ const SemiDiagram = () => {
     const [W, setW] = useState(1);
 
     const [trackChange, alertChange] = useState(1);
+
+    let [frame, setFrame] = useState(0);
+
+    useEffect(() => {
+        const intervalID = setInterval(() => {
+            // 2. Update the state with the new second value
+            setFrame(currentFrame => currentFrame + 1);
+        }, 1000 / 24)
+
+        return () => clearInterval(intervalID);
+    }, [])
 
 
 
@@ -60,10 +71,12 @@ const SemiDiagram = () => {
                     <TextObj pos={[-L * .35, 0, .4]} fontSize={0.2} clr={"white"} text="source"></TextObj>
                     <TextObj pos={[L * .35, 0, .4]} fontSize={0.2} clr={"white"} text="drain"></TextObj>
 
-                    <Arrow pos={[L * .35, 1, 0]} direction={[0, -Math.PI, 0]} length={0.5} ></Arrow>
+                    {/* SOURCE & DRAIN ARROWS */}
+                    <Arrow pos={[L * .35, (NPN ? 0.7 : 1.2) + (Math.sin(frame / 10) / 10) * (NPN ? 1 : -1), 0]} direction={[0, NPN ? Math.PI : -Math.PI, 0]} length={0.5} ></Arrow>
+                    <Arrow pos={[-L * .35, (NPN ? 1.2 : 0.7) + (Math.sin(frame / 10) / 10) * (NPN ? -1 : 1), 0]} direction={[0, NPN ? -Math.PI : Math.PI, 0]} length={0.5} ></Arrow>
 
                     {/* Length Label */}
-                    {trackChange == 1 && <TextObj pos={[0, (W / 2 + 1.3) / 2 + 0.1, 0]} fontSize={L / 10} clr={"white"} text={`L: ${L} µm`}></TextObj>}
+                    {trackChange == 1 && <TextObj pos={[0, (W / 2 + 1.3) / 2 + 0.1, 0]} fontSize={L / 10} clr={"white"} text={`L: ${L} µm\n${frame}`}></TextObj>}
                     {trackChange == 2 && <TextObj pos={[L / 2 + 0.1, 0, 0]} fontSize={L / 10} clr={"white"} text={`W: ${W} µm`} rotation={[0, 0, Math.PI / 2]}></TextObj>}
 
 
@@ -79,11 +92,6 @@ const SemiDiagram = () => {
 
             {/* INPUT FORM */}
             <form className="mt-3 mb-3">
-
-                <div className="mb-3">
-                    <label className="form-label">Password</label>
-                    <input type="number" className="form-control" id="exampleInputPassword1" value={5}></input>
-                </div>
 
 
                 {/* LENGTH slider */}
