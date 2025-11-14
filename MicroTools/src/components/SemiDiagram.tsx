@@ -15,9 +15,11 @@ const SemiDiagram = () => {
     const canvasStyle = {
         width: '70%',
         height: window.innerHeight / 1.2 - 120, // Example height
-        backgroundColor: '#5f5f5fff', // Dark background for contrast
+        backgroundColor: '#3e3e3eff', // Dark background for contrast
         borderRadius: '10px'
     }
+
+    const PColor = "rgba(166, 166, 166, 1)";
 
     // const [size, setSize] = useState([2, 1, 1]);
 
@@ -62,22 +64,29 @@ const SemiDiagram = () => {
                     {/* BASIC CUBE */}
 
                     {/* N-MOS, 2 N+ on top of 1 P, 0:48 */}
-                    <Cube pos={[0, 0, -.3]} side={[L, W / 2 + 1.3, .9]} clr={NPN ? "gray" : "hotpink"} ></Cube>
-                    <Cube pos={[-L * .35, 0, -.01]} side={[L * 0.175, (W / 2 + 1.3) + .2, .5]} clr={NPN ? "hotpink" : "gray"} ></Cube>
-                    <Cube pos={[L * .35, 0, -.01]} side={[L * 0.175, (W / 2 + 1.3) + .2, .5]} clr={NPN ? "hotpink" : "gray"} ></Cube>
+                    <Cube pos={[0, 0, -.9]} side={[L, W / 2 + 1.3, 2.1]} clr={NPN ? PColor : "hotpink"} ></Cube>
+                    <Cube pos={[-L * .35, 0, -.01]} side={[L * 0.175, (W / 2 + 1.3) + .2, .5]} clr={NPN ? "hotpink" : PColor} ></Cube>
+                    <Cube pos={[L * .35, 0, -.01]} side={[L * 0.175, (W / 2 + 1.3) + .2, .5]} clr={NPN ? "hotpink" : PColor} ></Cube>
+                    {/* OXIDE & METAL LAYER */}
+                    <Cube pos={[0, 0, .2]} side={[L - L * 0.35 * 1.3, W / 2 + 1.4, .15]} clr="gray" ></Cube>
+                    <Cube pos={[0, 0, .35]} side={[L - L * 0.35 * 1.3, W / 2 + 1.4, .15]} clr="blue" ></Cube>
+                    {/* METAL LAYER ON S&D */}
+                    <Cube pos={[-L * .35, 0, .3]} side={[L * 0.07, (W / 2 + 1.3) + .2, .1]} clr="blue" ></Cube>
+                    <Cube pos={[L * .35, 0, .3]} side={[L * 0.07, (W / 2 + 1.3) + .2, .1]} clr="blue" ></Cube>
 
                     {/* TEXT LABELS */}
-                    <TextObj pos={[0, 0, 1.5]} fontSize={0.2} clr={"white"} text={NPN ? "NPN Transistor" : "PNP Transistor"}></TextObj>
-                    <TextObj pos={[-L * .35, 0, .4]} fontSize={0.2} clr={"white"} text="source"></TextObj>
-                    <TextObj pos={[L * .35, 0, .4]} fontSize={0.2} clr={"white"} text="drain"></TextObj>
+                    <TextObj pos={[0, 0, 1.5]} fontSize={0.2} clr={"white"} text={NPN ? "N-MOS" : "P-MOS"}></TextObj>
+                    <TextObj pos={[-L * .35, 0, 1.5]} fontSize={0.3} clr={"lightblue"} text="source"></TextObj>
+                    <TextObj pos={[L * .35, 0, 1.5]} fontSize={0.3} clr={"lightblue"} text="drain"></TextObj>
 
                     {/* SOURCE & DRAIN ARROWS */}
                     <Arrow pos={[L * .35, (NPN ? 0.7 : 1.2) + (Math.sin(frame / 10) / 10) * (NPN ? 1 : -1), 0]} direction={[0, NPN ? Math.PI : -Math.PI, 0]} length={0.5} ></Arrow>
                     <Arrow pos={[-L * .35, (NPN ? 1.2 : 0.7) + (Math.sin(frame / 10) / 10) * (NPN ? -1 : 1), 0]} direction={[0, NPN ? -Math.PI : Math.PI, 0]} length={0.5} ></Arrow>
 
                     {/* Length Label */}
-                    {trackChange == 1 && <TextObj pos={[0, (W / 2 + 1.3) / 2 + 0.1, 0]} fontSize={L / 10} clr={"white"} text={`L: ${L} µm\n${frame}`}></TextObj>}
-                    {trackChange == 2 && <TextObj pos={[L / 2 + 0.1, 0, 0]} fontSize={L / 10} clr={"white"} text={`W: ${W} µm`} rotation={[0, 0, Math.PI / 2]}></TextObj>}
+                    {trackChange == 1 && <TextObj pos={[0, (W / 2 + 1.3) / 2 + 0.1, 0]} fontSize={L / 10} clr={"white"} text={`L: ${L} µm`}></TextObj>}
+                    {trackChange == 2 && <TextObj pos={[L / 2 + 0.1, 0, 0]} fontSize={W / 5} clr={"white"} text={`W: ${W} µm`} rotation={[0, 0, Math.PI / 2]}></TextObj>}
+
 
 
 
