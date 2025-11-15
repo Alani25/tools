@@ -10,11 +10,11 @@ function App() {
 
 
   const items = [
-    { title: "Intro to Semiconductors", link: "threeJS" },
-    { title: "About Me", link: "https://hamzah.page" },
-    { title: "Statistics & DOE", link: "https://hamzah.page" },
-    { title: "Riemann Sum", link: "http://hamzah.page/graphing.html" },
-    { title: "Project Needle", link: "https://itch.io/embed-upload/10541213?color=10364c" }
+    { title: "MOSFET Diagram", link: "threeJS" },
+    { title: "DOE SMI", link: "https://hamzah.page" },
+    { title: "Riemann Sum (2023)", link: "http://hamzah.page/graphing.html" },
+    { title: "Project Needle", link: "https://itch.io/embed-upload/10541213?color=10364c" },
+    { title: "About Me", link: "https://hamzah.page" }
   ];
 
   let [iflink, switchIfLink] = useState(items[0].link);

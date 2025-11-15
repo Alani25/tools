@@ -17,12 +17,13 @@ interface SimpleGraphProps {
   xLabel: string
   yLabel: string
   title: string
+  minY?: number
   maxY: number
   color?: string,
   point?: number[]
 }
 
-const SimpleGraph = ({ xValues, yValues, xLabel, yLabel, title, maxY, color = "rgba(75,192,192,1)", point }: SimpleGraphProps) => {
+const SimpleGraph = ({ xValues, yValues, xLabel, yLabel, title, minY = 0, maxY, color = "rgba(75,192,192,1)", point }: SimpleGraphProps) => {
   const data = {
     labels: xValues,
     datasets: [
@@ -81,7 +82,7 @@ const SimpleGraph = ({ xValues, yValues, xLabel, yLabel, title, maxY, color = "r
           display: true,
           text: yLabel
         },
-        min: 0,
+        min: minY,
         max: maxY,
         ticks: {
           callback: function (value: any) {
