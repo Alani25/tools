@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Alert } from "./components/Alert";
 import { Button } from "./components/Button";
 import ListGroup, { type ToolboxItem } from "./components/ListGroup";
-import SemiDiagram from "./components/semiDiagram";
+
+import SemiDiagram from "./components/SemiDiagram";
+
 
 function App() {
 
