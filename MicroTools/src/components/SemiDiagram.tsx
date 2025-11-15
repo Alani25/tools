@@ -13,9 +13,9 @@ const Vt = 1; // threshold voltage
 
 // calculating DRAIN CURRENT
 let Id = (Vg: number, Vds: number, k: number) => {
-    if (Vg <= Vt)
+    if (Math.abs(Vg) <= Vt)
         return 0;
-    if (Vds >= (Vg - Vt))
+    if (Vds >= (Math.abs(Vg) - Vt))
         return 0.5 * k * (Vg - Vt) ** 2;
     return k * ((Vg - Vt) * Vds - (Vds ** 2 / 2));
 }
@@ -87,6 +87,11 @@ const SemiDiagram = () => {
         return () => clearInterval(intervalID);
     }, [])
 
+    const metalLabel = (<h3>Metal</h3>);
+    const oxideLabel = (<>Oxide Layer</>);
+    let smallRegion = (<>{NPN ? (<>N<sup>+</sup> Region</>) : "P Region"}</>);
+    let bigRegion = (<>{NPN ? "P Region" : (<>N Region</>)}</>);
+
 
 
     return (
@@ -99,7 +104,7 @@ const SemiDiagram = () => {
                 <div style={canvasStyle}>
 
                     <Canvas camera={{
-                        position: [5, 1, 5],
+                        position: [4.3, 3, 8],
                         rotation: [0, 0, 0] // note to self: this does nothing
                     }}>
 
@@ -112,15 +117,15 @@ const SemiDiagram = () => {
                         {/* BASIC CUBE */}
 
                         {/* N-MOS, 2 N+ on top of 1 P, 0:48 */}
-                        <Cube pos={[0, 0, -.9]} side={[L, W / 6 + 1.3, 2.1]} clr={NPN ? PColor : "hotpink"} ></Cube>
-                        <Cube pos={[-L * .35, 0, -.01]} side={[L * 0.175, (W / 6 + 1.3) + .2, .5]} clr={NPN ? "hotpink" : PColor} ></Cube>
-                        <Cube pos={[L * .35, 0, -.01]} side={[L * 0.175, (W / 6 + 1.3) + .2, .5]} clr={NPN ? "hotpink" : PColor} ></Cube>
+                        <Cube pos={[0, 0, -.9]} side={[L, W / 6 + 1.3, 2.1]} clr={NPN ? PColor : "hotpink"} text={bigRegion} ></Cube>
+                        <Cube pos={[-L * .35, 0, -.01]} side={[L * 0.175, (W / 6 + 1.3) + .2, .5]} clr={NPN ? "hotpink" : PColor} text={smallRegion} ></Cube>
+                        <Cube pos={[L * .35, 0, -.01]} side={[L * 0.175, (W / 6 + 1.3) + .2, .5]} clr={NPN ? "hotpink" : PColor} text={smallRegion}></Cube>
                         {/* OXIDE & METAL LAYER */}
-                        <Cube pos={[0, 0, .2]} side={[L - L * 0.35 * 1.3, W / 6 + 1.4, .15]} clr="gray" ></Cube>
-                        <Cube pos={[0, 0, .35]} side={[L - L * 0.35 * 1.3, W / 6 + 1.4, .15]} clr="blue" ></Cube>
+                        <Cube pos={[0, 0, .2]} side={[L - L * 0.35 * 1.3, W / 6 + 1.4, .15]} clr="gray" text={oxideLabel}></Cube>
+                        <Cube pos={[0, 0, .35]} side={[L - L * 0.35 * 1.3, W / 6 + 1.4, .15]} clr="blue" text={metalLabel}></Cube>
                         {/* METAL LAYER ON S&D */}
-                        <Cube pos={[-L * .35, 0, .3]} side={[L * 0.07, (W / 6 + 1.3) + .2, .1]} clr="blue" ></Cube>
-                        <Cube pos={[L * .35, 0, .3]} side={[L * 0.07, (W / 6 + 1.3) + .2, .1]} clr="blue" ></Cube>
+                        <Cube pos={[-L * .35, 0, .3]} side={[L * 0.07, (W / 6 + 1.3) + .2, .1]} clr="blue" text={metalLabel}></Cube>
+                        <Cube pos={[L * .35, 0, .3]} side={[L * 0.07, (W / 6 + 1.3) + .2, .1]} clr="blue" text={metalLabel}></Cube>
 
                         {/* TEXT LABELS */}
                         <TextObj pos={[0, 0, 1.5]} fontSize={0.2} clr={"white"} text={NPN ? "N-MOS" : "P-MOS"}></TextObj>
@@ -252,7 +257,7 @@ const SemiDiagram = () => {
             </form>
 
 
-        </div>
+        </div >
     )
 }
 
