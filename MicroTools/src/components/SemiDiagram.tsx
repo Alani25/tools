@@ -142,7 +142,7 @@ const SemiDiagram = () => {
 
                         {/* Length Label */}
                         {trackChange == 1 && <TextObj pos={[0, (W / 6 + 1.3) / 2 + 0.1, 0]} fontSize={L / 10} clr={"white"} text={`L: ${L} µm`}></TextObj>}
-                        {trackChange == 2 && <TextObj pos={[L / 2 + 0.1, 0, 0]} fontSize={W / 15} clr={"white"} text={`W: ${W} µm`} rotation={[0, 0, Math.PI / 2]}></TextObj>}
+                        {trackChange == 2 && <TextObj pos={[L / 2 + 0.1, 0, 0]} fontSize={Math.max(3, W) / 20} clr={"white"} text={`W: ${W} µm`} rotation={[0, 0, Math.PI / 2]}></TextObj>}
 
 
 
