@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Card from "./SSIMComp/Card";
 
 interface imageProps {
@@ -17,11 +17,50 @@ const SSIM = () => {
 
     const [progress, setProgress] = useState(-1);
 
-    const [steps, setSteps] = useState(0); // zero steps for max/ standard
+    const [steps, setSteps] = useState(201); // zero steps for max/ standard
+    const [stepNumb, takeStep] = useState(-1);
 
-    const SSIMTest = () => {
+    const [SSIMIMG, setSSIMIMG] = useState("");
 
-    }
+    // MAIN SSIM ALGORITHM 
+    useEffect(() => {
+        if (stepNumb < 0 || !image1 || !image2) return;
+
+        const runStep = async () => {
+            const maxS = steps || (image1.width * image1.height);
+
+            const canvas = document.createElement("canvas");
+            canvas.width = image1.width + image2.width;
+            canvas.height = Math.max(image1.height, image2.height);
+
+            const ctx = canvas.getContext("2d")!;
+            ctx.drawImage(image1.img, 0, 0);
+            ctx.drawImage(image2.img, image1.width, 0);
+
+            setSSIMIMG(canvas.toDataURL());
+            setProgress((stepNumb / maxS) * 100);
+
+
+            await new Promise(requestAnimationFrame); // allow UI to update
+
+            if (stepNumb >= maxS) {
+                setProgress(100);
+                takeStep(-1); // done
+            } else {
+                takeStep(stepNumb + 1); // schedule next step
+            }
+            console.log(`Step: ${stepNumb}\nProgress: ${progress}`)
+        };
+
+        runStep();
+    }, [stepNumb]);
+
+
+    // if (stepNumb > -1)
+    //     takeStep(stepNumb + 1);
+    // if (progress > -1) {
+    //     setProgress(100 * stepNumb / maxS);
+    // }
 
 
     // uploading image function
@@ -75,19 +114,34 @@ const SSIM = () => {
                     buttonFunction={() => uploadImage(setImage2)} />
             </div>
 
-            {/* RUN TEST BUTTON */}
-            <button className={"btn " + ((allowMessage || progress > -1) ? "btn-secondary" : "btn-primary")}
+            {/* SET STEPS & RUN TEST BUTTON + WARNINGS ZONE */}
+
+            <div style={{ "display": "flex", "justifyContent": "center", "gap": "10px" }}>
+                <label className="form-label">Steps: {steps}</label>
+                <input type="range" className="form-range" min="1" max="100" value={steps} id="range4"
+                    onChange={(v) => setSteps(Number(v.target.value))}
+                    style={{ "width": "40%" }}></input>
+            </div>
+
+            <button className={"btn " + ((allowMessage || (progress > -1 && progress < 100)) ? "btn-secondary" : "btn-primary")}
                 onClick={() => {
-                    setProgress(Number(prompt("Enter new state as a test")));
+                    // setProgress(Number(prompt("Enter new state as a test"))); // TODO set progress to zero
+                    setProgress(0);
+                    takeStep(0);
                 }}>Run SSIM Test</button>
 
             <p style={{ color: "red" }}>{allowMessage || ""}</p>
 
-            {progress > -1 &&
-                <div className="progress">
-                    <div className="progress-bar" style={{ "width": progress + `%` }}></div>
-                </div>
-            }
+
+            <>
+                {progress > -1 && stepNumb > -1 &&
+                    <div className="progress">
+                        <div className="progress-bar" style={{ "width": progress + `%` }}></div>
+                    </div>
+                }
+                {SSIMIMG && <img src={SSIMIMG} width={"100%"} className="mt-3 mb-5"></img>}
+            </>
+
 
         </div>
     )

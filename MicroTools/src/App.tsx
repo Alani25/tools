@@ -11,8 +11,8 @@ function App() {
 
 
   const items = [
-    { title: "DOE SSIM", link: "ssim" },
     { title: "MOSFET Diagram", link: "threeJS" },
+    { title: "DOE SSIM", link: "ssim" },
     { title: "Riemann Sum (2023)", link: "http://hamzah.page/graphing.html" },
     { title: "Project Needle", link: "https://itch.io/embed-upload/10541213?color=10364c" },
     { title: "About Me", link: "https://hamzah.page" }
