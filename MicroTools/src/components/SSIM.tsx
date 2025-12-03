@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
 import Card from "./SSIMComp/Card";
 
+// declare var require: any;
+// const { ssim } = require("ssim");
+import ssim from "ssim.js";
+import { type ImageData } from "ssim.js/dist/types";
+
 interface imageProps {
     filename: string;
-    src: string;
+    data: string;
     img: HTMLImageElement;
     width: number;
     height: number;
@@ -50,6 +55,7 @@ const SSIM = () => {
                 takeStep(stepNumb + 1); // schedule next step
             }
             console.log(`Step: ${stepNumb}\nProgress: ${progress}`)
+            ssim(image1,image2.img)
         };
 
         runStep();
@@ -79,7 +85,7 @@ const SSIM = () => {
             img.onload = () => {
                 setImageFunction({
                     filename: file[0].name,
-                    src,
+                    data: src,
                     img,
                     width: img.width,
                     height: img.height
@@ -105,12 +111,12 @@ const SSIM = () => {
                 <Card
                     title={image1 ? image1.filename : "Image 1"}
                     text={image1 ? `${image1.width} x ${image1.height}` : "Click to upload Image 1"}
-                    imageSrc={image1 ? image1.src : "vite.svg"}
+                    imageSrc={image1 ? image1.data : "vite.svg"}
                     buttonFunction={() => uploadImage(setImage1)} />
                 <Card
                     title={image2 ? image2.filename : "Image 2"}
                     text={image2 ? `${image2.width} x ${image2.height}` : "Click to upload Image 2"}
-                    imageSrc={image2 ? image2.src : "vite.svg"}
+                    imageSrc={image2 ? image2.data : "vite.svg"}
                     buttonFunction={() => uploadImage(setImage2)} />
             </div>
 
@@ -128,6 +134,7 @@ const SSIM = () => {
                     // setProgress(Number(prompt("Enter new state as a test"))); // TODO set progress to zero
                     setProgress(0);
                     takeStep(0);
+                    window.alert("running SSIM tets");
                 }}>Run SSIM Test</button>
 
             <p style={{ color: "red" }}>{allowMessage || ""}</p>

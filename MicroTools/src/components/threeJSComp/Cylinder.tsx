@@ -1,16 +1,17 @@
 import { Html, Text } from "@react-three/drei";
 import { useState, type ReactNode } from "react";
 
-interface cubeProps {
+interface cylinderProps {
     pos: number[],
-    side: number[],
+    height: number,
+    radius: number,
     clr: string,
     posHover?: number[],
     zoomHover?: number,
     text?: ReactNode
 };
 
-const Cube = ({ pos, side, clr, posHover = pos, zoomHover = 1, text = (<></>) }: cubeProps) => {
+const Cylinder = ({ pos, height, radius, clr, posHover = pos, zoomHover = 1, text = (<></>) }: cylinderProps) => {
 
     const [hoverState, onHoverState] = useState(0);
     const [coords, updateCoords] = useState([0, 0, 0]);
@@ -19,7 +20,7 @@ const Cube = ({ pos, side, clr, posHover = pos, zoomHover = 1, text = (<></>) }:
 
     return (
         <>
-            < mesh position={[(hoverState ? posHover : pos)[0], (hoverState ? posHover : pos)[2], (hoverState ? posHover : pos)[1]]}
+            < mesh position={[(hoverState ? posHover : pos)[0], (hoverState ? posHover : pos)[2] + height * scale / 2, (hoverState ? posHover : pos)[1]]}
                 onPointerEnter={(e) => {
                     e.stopPropagation()
                     onHoverState(1)
@@ -32,11 +33,11 @@ const Cube = ({ pos, side, clr, posHover = pos, zoomHover = 1, text = (<></>) }:
                 }}
             >
 
-                <boxGeometry args={[side[0] * scale, side[2] * scale, side[1] * scale]} />
+                <cylinderGeometry args={[radius * scale, radius * scale, height * scale]} />
                 <meshStandardMaterial color={clr} />
             </mesh >
             {hoverState && (
-                <Html position={[coords[0], coords[1], coords[2]]}>
+                <Html position={coords}>
                     <h1 style={{ color: clr }}>{text}</h1>
                 </Html>
             )}
@@ -44,4 +45,4 @@ const Cube = ({ pos, side, clr, posHover = pos, zoomHover = 1, text = (<></>) }:
     )
 }
 
-export default Cube;
+export default Cylinder;

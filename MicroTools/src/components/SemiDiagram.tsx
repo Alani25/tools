@@ -5,14 +5,20 @@ import { useEffect, useState } from "react";
 
 import Arrow from "./threeJSComp/Arrow";
 import Cube from "./threeJSComp/Cube";
+import Cylinder from "./threeJSComp/Cylinder";
 import TextObj from "./threeJSComp/TextObj";
 
 import SimpleGraph from "./SimpleGraph";
 
-const Vt = 1; // threshold voltage
+import FieldMap from "./threeJSComp/FieldMap";
+import ImgPlane from "./threeJSComp/ImgPlane";
+import BasicPlane from "./threeJSComp/BasicPlane";
+
+
+// let Vt = 1; // threshold voltage
 
 // calculating DRAIN CURRENT
-let Id = (Vg: number, Vds: number, k: number) => {
+let Id = (Vg: number, Vds: number, k: number, Vt: number) => {
     if (Math.abs(Vg) <= Vt)
         return 0;
     if (Vds >= (Math.abs(Vg) - Vt))
@@ -20,27 +26,31 @@ let Id = (Vg: number, Vds: number, k: number) => {
     return k * ((Vg - Vt) * Vds - (Vds ** 2 / 2));
 }
 
+let inversionLength = 0;
+let e1Length = .45;
+let eColors = "rgba(255, 0, 200, 1)";
+
 
 
 // generating points for the Drain Current vs Drain Voltage Graph
-function generateIdVdsCurve(Vg: number, k: number) {
+function generateIdVdsCurve(Vg: number, k: number, Vt: number) {
     const pointsX = []
     const pointsY = []
 
     for (let Vds = 0; Vds <= 7; Vds += 0.1) {
         pointsX.push(Number((Vds).toFixed(1)));
-        pointsY.push(Number((Id(Vg, Vds, k) * 1e3).toFixed(2)));
+        pointsY.push(Number((Id(Vg, Vds, k, Vt) * 1e3).toFixed(2)));
     }
     return [pointsX, pointsY];
 }
 // generating points for Gate Voltage vs Drain Current
-function generateIdVgCurve(Vds: number, k: number) {
+function generateIdVgCurve(Vds: number, k: number, Vt: number) {
     const pointsX = []
     const pointsY = []
 
     for (let Vg = 0; Vg <= 5; Vg += .1) {
         pointsX.push(Number((Vg).toFixed(1)));
-        pointsY.push(Number((Id(Vg, Vds, k) * 1e3 / 1.3).toFixed(2))); // already returns amps
+        pointsY.push(Number((Id(Vg, Vds, k, Vt) * 1e3 / 1.3).toFixed(2))); // already returns amps
     }
 
     return [pointsX, pointsY]
@@ -76,7 +86,10 @@ const SemiDiagram = () => {
 
     let [frame, setFrame] = useState(0);
 
-    let k_prime = 200e-6;
+    let [Vt, setVt] = useState(1);
+
+
+    let [k_prime, setK_prime] = useState(200e-6);
 
     useEffect(() => {
         const intervalID = setInterval(() => {
@@ -91,6 +104,18 @@ const SemiDiagram = () => {
     const oxideLabel = (<>Oxide Layer</>);
     let smallRegion = (<>{NPN ? (<>N<sup>+</sup> Region</>) : "P Region"}</>);
     let bigRegion = (<>{NPN ? "P Region" : (<>N Region</>)}</>);
+    const gateLabel = (<h3>Gate</h3>);
+
+    // VISUAL ELECTRON REGION LABELING VARIABLES
+    let mapIMG = FieldMap({ frame, Vgs: Vg, Vds: Vds, L, W, NPN });
+    inversionLength += (Math.min(1.4,Math.max(0,0.5 * (Vg - Vt)/ (2 * Vt))) - inversionLength)/12;
+    let oscillScaler = (length=5,speed=24)=> (1+Math.abs(Math.sin(frame/speed)/length));
+    let shakeEffect = (intensity=1)=> (Math.random()*2 - 1)*intensity/100;
+
+    let electronDisp = (x: number,y: number, shake=1) => <ImgPlane src="electron.png" pos={[0 + x + shakeEffect(shake), (W / 6 + 1.3) / 2 + 1.7e-2, -.9 + y + shakeEffect(shake)]} side={[.1, .1]}></ImgPlane>
+    let HoleDisp = (x: number,y: number, shake=1) => <ImgPlane src="hole.png" pos={[0 + x + shakeEffect(shake), (W / 6 + 1.3) / 2 + 1.7e-2, -.9 + y + shakeEffect(shake)]} side={[.1, .1]}></ImgPlane>
+
+
 
 
 
@@ -127,14 +152,38 @@ const SemiDiagram = () => {
                         <Cube pos={[-L * .35, 0, .3]} side={[L * 0.07, (W / 6 + 1.3) + .2, .1]} clr="blue" text={metalLabel}></Cube>
                         <Cube pos={[L * .35, 0, .3]} side={[L * 0.07, (W / 6 + 1.3) + .2, .1]} clr="blue" text={metalLabel}></Cube>
 
+
+
+                        {/* <ImgPlane src={mapIMG} pos={[0, (W / 6 + 1.3) / 2 + 1e-2, -.9]} side={[L, 2.1]}></ImgPlane> */}
+                        {/* INVERSION REGION */}
+                        <BasicPlane clr="rgba(0, 255, 221, 1)" pos={[0, (W / 6 + 1.3) / 2 + 1e-2, -.9+2.1/2]} side={[L/1.9, inversionLength]}/>
+                        <BasicPlane clr="rgba(0, 255, 221, 1)" pos={[0, (W / 6 + 1.3) / 2 + 1e-2, -.9+2.1/2]} side={[L/1.9 * oscillScaler(20,24), inversionLength * oscillScaler(7,32)]} opacity={0.5}/>
+                        {/* PN JUNCTION FIELDS */}
+                        <BasicPlane clr={eColors} pos={[-L * .35, (W / 6 + 1.3) / 2 + 1.2e-2, -.9+2.1/2]} side={[L * .2 * oscillScaler(20,24), e1Length * oscillScaler(7,32)]} />
+                        <BasicPlane clr={eColors} pos={[ L * .35, (W / 6 + 1.3) / 2 + 1.2e-2, -.9+2.1/2]} side={[L * .2 * oscillScaler(20,24), e1Length * oscillScaler(7,32)]} />
+
+                        {electronDisp(0,.5)}
+                        {HoleDisp(0,-0.5,0)}
+
+
+                        
+
+
+
+
+                        {/* GATE */}
+                        <Cylinder pos={[0, 0, 0]} radius={.1} height={1.2} clr="rgba(0, 92, 250, 1)" text={gateLabel} />
+                        <TextObj pos={[0, 0, 1.9 + (Math.sin(frame / 10) / 10) * -.5]} fontSize={0.2} clr={"white"} text="base"></TextObj>
+                        <Arrow pos={[0, (1.7) + (Math.sin(frame / 10) / 10) * (-0.5), 0]} direction={[0, -Math.PI, 0]} length={0.3} ></Arrow>
+
                         {/* TEXT LABELS */}
-                        <TextObj pos={[0, 0, 1.5]} fontSize={0.2} clr={"white"} text={NPN ? "N-MOS" : "P-MOS"}></TextObj>
+                        {/* <TextObj pos={[0, 0, 1.5]} fontSize={0.2} clr={"white"} text={NPN ? "N-MOS" : "P-MOS"}></TextObj> */}
                         <TextObj pos={[-L * .35, 0, 1.5]} fontSize={0.1 * L} clr={"lightblue"} text="source"></TextObj>
                         <TextObj pos={[L * .35, 0, 1.5]} fontSize={0.1 * L} clr={"lightblue"} text="drain"></TextObj>
                         {/* N/P LABELS */}
                         <TextObj pos={[-L * .35, (W / 6 + 1.3) / 2 + 0.11, 0]} fontSize={0.2} clr={"white"} text={NPN ? "N+" : "P"}></TextObj>
                         <TextObj pos={[L * .35, (W / 6 + 1.3) / 2 + 0.11, 0]} fontSize={0.2} clr={"white"} text={NPN ? "N+" : "P"}></TextObj>
-                        <TextObj pos={[0, (W / 6 + 1.3) / 2 + 0.01, -1]} fontSize={1} clr={"white"} text={NPN ? "P" : "N"}></TextObj>
+                        <TextObj pos={[0, (W / 6 + 1.3) / 2 + 0.02, -1]} fontSize={1} clr={"white"} text={NPN ? "P" : "N"}></TextObj>
 
                         {/* SOURCE & DRAIN ARROWS */}
                         <Arrow pos={[L * .35, (NPN ? 0.7 : 1.2) + (Math.sin(frame / 10) / 10) * (NPN ? 1 : -1), 0]} direction={[0, NPN ? Math.PI : -Math.PI, 0]} length={0.5} ></Arrow>
@@ -157,26 +206,26 @@ const SemiDiagram = () => {
 
                 <div>
                     <SimpleGraph
-                        xValues={generateIdVdsCurve(Vg, (NPN ? 1 : -1) * k_prime * (W / L))[0]}
-                        yValues={generateIdVdsCurve(Vg, (NPN ? 1 : -1) * k_prime * (W / L))[1]}
+                        xValues={generateIdVdsCurve(Vg, (NPN ? 1 : -1) * k_prime * (W / L), Vt)[0]}
+                        yValues={generateIdVdsCurve(Vg, (NPN ? 1 : -1) * k_prime * (W / L), Vt)[1]}
                         xLabel={`${NPN ? "Drain–Source" : "Source–Drain"} Voltage (V${NPN ? "ds" : "sd"})`}
                         yLabel="Drain Current (mA)"
                         title=""
-                        minY={NPN ? 0 : -Math.max(5, Id(Vg, 7, k_prime * (W / L)) * 1e3 + .5)}
-                        maxY={NPN ? Math.max(5, Id(Vg, 7, (NPN ? 1 : -1) * k_prime * (W / L)) * 1e3 + .5) : 0}
+                        minY={NPN ? 0 : -Math.max(5, Id(Vg, 7, k_prime * (W / L), Vt) * 1e3 + .5)}
+                        maxY={NPN ? Math.max(5, Id(Vg, 7, (NPN ? 1 : -1) * k_prime * (W / L), Vt) * 1e3 + .5) : 0}
                         color="red"
-                        point={[Vds, Id(Vg, Vds, (NPN ? 1 : -1) * k_prime * (W / L)) * 1e3]}
+                        point={[Vds, Id(Vg, Vds, (NPN ? 1 : -1) * k_prime * (W / L), Vt) * 1e3]}
                     />
                     <SimpleGraph
-                        xValues={generateIdVgCurve(Vds, (NPN ? 1 : -1) * k_prime * (W / L))[0]}
-                        yValues={generateIdVgCurve(Vds, (NPN ? 1 : -1) * k_prime * (W / L))[1]}
+                        xValues={generateIdVgCurve(Vds, (NPN ? 1 : -1) * k_prime * (W / L), Vt)[0]}
+                        yValues={generateIdVgCurve(Vds, (NPN ? 1 : -1) * k_prime * (W / L), Vt)[1]}
                         xLabel={`${NPN ? "Gate–Source" : "Source–Gate"} Voltage (V${NPN ? "gs" : "sg"})`}
                         yLabel="Drain Current (mA)"
                         title=""
-                        minY={NPN ? 0 : -Math.max(5, Id(5, Vds, k_prime * (W / L)) * 1e3 / 1.3 + .5)}
-                        maxY={NPN ? Math.max(5, Id(5, Vds, k_prime * (W / L)) * 1e3 / 1.3 + .5) : 0}
+                        minY={NPN ? 0 : -Math.max(5, Id(5, Vds, k_prime * (W / L), Vt) * 1e3 / 1.3 + .5)}
+                        maxY={NPN ? Math.max(5, Id(5, Vds, k_prime * (W / L), Vt) * 1e3 / 1.3 + .5) : 0}
                         color="blue"
-                        point={[Vg, Id(Vg, Vds, (NPN ? 1 : -1) * k_prime * (W / L)) * 1e3 / 1.3]}
+                        point={[Vg, Id(Vg, Vds, (NPN ? 1 : -1) * k_prime * (W / L), Vt) * 1e3 / 1.3]}
                     />
 
                     <div style={{ "display": "flex", "gap": "30px", "justifyContent": "center" }}>
@@ -195,7 +244,22 @@ const SemiDiagram = () => {
             </div>
 
 
-            {/* INPUT FORM */}
+            {/* INPUT FORM - TEXTBOX SECTION */}
+            {/* Vt */}
+            <form className="mt-3 mb-3" style={{ "display": "flex", "alignItems": "center" }}>
+                <label className="form-label m-3">V<sub>t</sub></label>
+                <input type="number" value={Vt} onChange={(v) => setVt(Math.max(0, Number(v.target.value)))}
+                    style={{ width: 90, height: 10 }} className="form-control form-control-sm"></input>
+
+                <label className="form-label m-3">K*</label>
+                <input type="number" value={Math.round(k_prime * 1e6)} onChange={(v) => setK_prime(Math.max(0, Number(v.target.value) * 1e-6))}
+                    style={{ width: 90, height: 10 }} className="form-control form-control-sm"></input>
+                <label className="form-label mt-2">x 10<sup>-6</sup></label>
+
+
+            </form>
+
+            {/* INPUT FORM - SLIDER */}
             <form className="mt-3 mb-3">
 
                 <div style={{ "display": "flex", "gap": "10px" }}>
@@ -203,7 +267,7 @@ const SemiDiagram = () => {
                     {/* Vg SLIDER */}
                     <div style={{ "flex": 1 }}>
                         <label className="form-label">{NPN ? "Gate to Source" : "Source to Gate"} Voltage: {Vg} V<sub>{NPN ? "gs" : "sg"}</sub></label>
-                        <input type="range" className="form-range" min="0" max="5" step="1" value={Vg}
+                        <input type="range" className="form-range" min="0" max="5" step=".1" value={Vg}
                             // onMouseLeave={() => alertChange(0)}
                             onChange={(value) => {
                                 setVg(Number(value.target.value));
@@ -255,6 +319,8 @@ const SemiDiagram = () => {
 
                 <button type="submit" className="btn btn-primary">Reload</button>
             </form>
+
+            <img src={mapIMG} className="mb-3"></img>
 
 
         </div >
