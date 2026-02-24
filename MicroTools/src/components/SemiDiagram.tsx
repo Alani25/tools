@@ -251,10 +251,10 @@ const SemiDiagram = () => {
                 <input type="number" value={Vt} onChange={(v) => setVt(Math.max(0, Number(v.target.value)))}
                     style={{ width: 90, height: 10 }} className="form-control form-control-sm"></input>
 
-                <label className="form-label m-3">K*</label>
+                {/* <label className="form-label m-3">K*</label>
                 <input type="number" value={Math.round(k_prime * 1e6)} onChange={(v) => setK_prime(Math.max(0, Number(v.target.value) * 1e-6))}
                     style={{ width: 90, height: 10 }} className="form-control form-control-sm"></input>
-                <label className="form-label mt-2">x 10<sup>-6</sup></label>
+                <label className="form-label mt-2">x 10<sup>-6</sup></label> */}
 
 
             </form>
@@ -320,7 +320,7 @@ const SemiDiagram = () => {
                 <button type="submit" className="btn btn-primary">Reload</button>
             </form>
 
-            <img src={mapIMG} className="mb-3"></img>
+            {/* <img src={mapIMG} className="mb-3"></img> */}
 
 
         </div >
