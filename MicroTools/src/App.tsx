@@ -1,3 +1,6 @@
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
+
 import { useState } from "react";
 import { Alert } from "./components/Alert";
 import { Button } from "./components/Button";
@@ -18,7 +21,7 @@ function App() {
   ];
 
   const [iflink, switchIfLink] = useState(items[0].link);
-  const [alertVisible, setAlertVisible] = useState(false);
+  // const [alertVisible, setAlertVisible] = useState(false);
 
   const closeOffcanvas = () => {
     const el = document.getElementById("toolboxOffcanvas");
@@ -40,7 +43,7 @@ function App() {
   };
 
   return (
-    <div className="container-fluid p-0 m-0">
+    <div className="container-fluid m-0" style={{padding: iflink !== "https://hamzah.page"?"5%":"0"}}>
       {/* Menu button overlay */}
       <button
         type="button"
@@ -62,7 +65,7 @@ function App() {
       >
         <div className="offcanvas-header">
           <h5 className="offcanvas-title" id="toolboxOffcanvasLabel">
-            Toolbox
+            <br></br>
           </h5>
           <button
             type="button"
@@ -73,9 +76,9 @@ function App() {
         </div>
 
         <div className="offcanvas-body">
-          <ListGroup items={items} name={"Toolbox"} onSelectItem={onItemSelect} />
+          <ListGroup items={items} name={"Toolbox"} onSelectItem={onItemSelect} data-bs-toggle="offcanvas" data-bs-target="#toolboxOffcanvas"/>
 
-          <div className="mt-3 mb-3">
+          {/* <div className="mt-3 mb-3">
             <Button onClick={() => setAlertVisible(!alertVisible)} color={"secondary"}>
               Click Me
             </Button>
@@ -84,7 +87,7 @@ function App() {
                 Hello <sup>world</sup> World
               </Alert>
             )}
-          </div>
+          </div> */}
         </div>
       </div>
 

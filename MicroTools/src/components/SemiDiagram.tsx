@@ -317,7 +317,7 @@ const SemiDiagram = () => {
 
 
 
-                <button type="submit" className="btn btn-primary">Reload</button>
+                <button type="submit" className="btn btn-primary">Exit</button>
             </form>
 
             {/* <img src={mapIMG} className="mb-3"></img> */}
